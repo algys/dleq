@@ -17,7 +17,7 @@ struct Proof {
     Point h, z;
     Point a, b;
 
-    BigInt r, c;
+    uint256_t r, c;
 
     bool verify() {
         if (!h.isOnCurve() || !g.isOnCurve())
@@ -36,34 +36,29 @@ struct Proof {
 
         return a == aa && b == bb;
     }
+
+    static Proof generate(Point g, Point m, uint256_t x) {
+        uint256_t c = rand();
+
+        // s must be large then Curve.N
+        uint256_t s = Secp256k1.n;
+        s += rand();
+
+        uint256_t r{};
+
+        c = c % Secp256k1.n;
+        r = (s - c * x) % Secp256k1.n;
+
+        auto a = g.scalarMult(s);
+        auto b = m.scalarMult(s);
+
+        return {
+            g, m,
+            g.scalarMult(x), m.scalarMult(x),
+            a, b,
+            r, c
+        };
+    }
 };
-
-Proof generateProof(Point g, Point m, BigInt x) {
-    Proof proof{};
-
-    BigInt c = 12345;
-    BigInt s = 12332334;
-
-    BigInt r{};
-
-    c = c % Curve::p;
-
-    c = (c * x) % Curve::p;
-    r = (s - c) % Curve::p;
-
-    auto a = g.scalarMult(s);
-    auto b = m.scalarMult(s);
-
-    proof.a = a;
-    proof.b = b;
-    proof.g = g;
-    proof.m = m;
-    proof.h = g.scalarMult(x);
-    proof.z = m.scalarMult(x);
-    proof.c = c;
-    proof.r = r;
-
-    return proof;
-}
 
 #endif //DLEQ_PROOF_HH
