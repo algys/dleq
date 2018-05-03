@@ -47,9 +47,22 @@ void proofTest() {
     // Init generators (public keys)
     Point g = curve.scalarMult(rand1);
     Point m = curve.scalarMult(rand2);
+    std::coud << "g: " << g.x() << " " < g.y() << "\n";
+    std::coud << "m: " << m.x() << " " < m.y() << "\n";
+
+
+    // Prepare list of random tests
+    std::vector<uint256_t> cList;
+    for (auto k = 0; k < 5; ++k)
+        cList.push_back((uint256_t)rand());
 
     // Proof
-    auto proof = Proof::generate(g, m, x);
+    auto proof = Proof::generate(g, m, x, cList);
+
+    // Print a, b
+    std::cout << "Proof generated\n";
+    std::cout << "a: " << proof.a.x() << " " << proof.a.y() << "\n";
+    std::cout << "b: " << proof.b.x() << " " << proof.b.y() << "\n";
 
     // Validate
     std::cout << "valid for x: " << proof.verify() << "\n";

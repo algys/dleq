@@ -71,11 +71,11 @@ public:
         _curve{Secp256k1}
     { }
 
-    Point(int1024_t const & x, int1024_t const & y) :
+    Point(uint256_t const & x, uint256_t const & y) :
         _x{x}, _y{y}, _curve{Secp256k1}
     { }
 
-    Point(Curve curve, int1024_t const & x, int1024_t const & y) :
+    Point(Curve curve, uint256_t const & x, uint256_t const & y) :
         _x{x}, _y{y}, _curve{std::move(curve)}
     { }
 
@@ -159,7 +159,7 @@ private:
         auto v = ((int1024_t)y() + curve().p - (m * (int1024_t)x()) % curve().p) % curve().p;
         auto x = (m * m + curve().p - (int1024_t)this->x() + curve().p - (int1024_t)point.x()) % curve().p;
         auto y = (curve().p - (m * x) % curve().p + curve().p - v) % curve().p;
-        return {curve(), x, y};
+        return {curve(), (uint256_t)x, (uint256_t)y};
     }
 
 private:
